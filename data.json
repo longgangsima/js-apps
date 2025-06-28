@@ -1,0 +1,38 @@
+{
+  "crypto": "bitcoin",
+  "metadata": {
+    "symbol": "BTC",
+    "exchange": "Coinbase",
+    "currency": "USD"
+  },
+  "history": [
+    {
+      "timestamp": "2024-06-28T10:00:00Z",
+      "details": {
+        "price": 45678.9,
+        "volume": 5.2,
+        "orderBook": {
+          "bids": [
+            [45670, 1.5],
+            [45660, 2.0]
+          ],
+          "asks": [
+            [45680, 1.0],
+            [45690, 3.0]
+          ]
+        }
+      }
+    },
+    {
+      "timestamp": "2024-06-28T11:00:00Z",
+      "details": {
+        "price": 45750.5,
+        "volume": 4.1,
+        "orderBook": {
+          "bids": [[45740, 1.2]],
+          "asks": [[45760, 2.5]]
+        }
+      }
+    }
+  ]
+}
