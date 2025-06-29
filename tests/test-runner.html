@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading App Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .test-pass {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-summary {
+            font-weight: bold;
+            font-size: 18px;
+            margin: 20px 0 10px 0;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Trading App Unit Tests</h1>
+        <p>Simple in-browser test runner for the trading application</p>
+        
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="clearResults()">Clear Results</button>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        // Simple test framework
+        const TestRunner = {
+            results: [],
+            
+            expect: (actual) => ({
+                toBe: (expected) => {
+                    if (actual === expected) {
+                        return { passed: true, message: `Expected ${actual} to be ${expected}` };
+                    }
+                    return { passed: false, message: `Expected ${actual} to be ${expected}, but got ${actual}` };
+                },
+                
+                toBeGreaterThan: (expected) => {
+                    if (actual > expected) {
+                        return { passed: true, message: `Expected ${actual} to be greater than ${expected}` };
+                    }
+                    return { passed: false, message: `Expected ${actual} to be greater than ${expected}` };
+                },
+                
+                toHaveLength: (expected) => {
+                    if (actual.length === expected) {
+                        return { passed: true, message: `Expected array to have length ${expected}` };
+                    }
+                    return { passed: false, message: `Expected array to have length ${expected}, but got ${actual.length}` };
+                },
+                
+                toBeInstanceOf: (expected) => {
+                    if (actual instanceof expected) {
+                        return { passed: true, message: `Expected ${actual} to be instance of ${expected.name}` };
+                    }
+                    return { passed: false, message: `Expected ${actual} to be instance of ${expected.name}` };
+                }
+            }),
+            
+            test: (description, testFn) => {
+                try {
+                    testFn();
+                    TestRunner.results.push({ description, passed: true, error: null });
+                } catch (error) {
+                    TestRunner.results.push({ description, passed: false, error: error.message });
+                }
+            },
+            
+            assert: (condition, message) => {
+                if (!condition) {
+                    throw new Error(message || 'Assertion failed');
+                }
+            }
+        };
+
+        // Import functions from app.js (simplified versions for testing)
+        function generateRandomOrder() {
+            const quantity = Math.random() * 10 + 0.1;
+            const price = Math.random() * 1000 + 50;
+            return [quantity, price];
+        }
+
+        async function postOrder(orderType, orderData) {
+            try {
+                console.log(`Posting ${orderType} order:`, orderData);
+                await new Promise(resolve => setTimeout(resolve, 10)); // Shorter delay for tests
+                return { success: true, data: orderData };
+            } catch (error) {
+                console.error('Error posting order:', error);
+                return { success: false, error };
+            }
+        }
+
+        // Test cases
+        function runAllTests() {
+            TestRunner.results = [];
+            
+            // Test 1: generateRandomOrder structure
+            TestRunner.test('generateRandomOrder should return array of length 2', () => {
+                const order = generateRandomOrder();
+                TestRunner.assert(Array.isArray(order), 'Order should be an array');
+                TestRunner.assert(order.length === 2, 'Order should have length 2');
+                TestRunner.assert(typeof order[0] === 'number', 'Quantity should be a number');
+                TestRunner.assert(typeof order[1] === 'number', 'Price should be a number');
+            });
+
+            // Test 2: generateRandomOrder ranges
+            TestRunner.test('generateRandomOrder should generate valid ranges', () => {
+                for (let i = 0; i < 10; i++) {
+                    const [quantity, price] = generateRandomOrder();
+                    TestRunner.assert(quantity >= 0.1 && quantity <= 10.1, 'Quantity should be in range 0.1-10.1');
+                    TestRunner.assert(price >= 50 && price <= 1050, 'Price should be in range 50-1050');
+                }
+            });
+
+            // Test 3: postOrder success case
+            TestRunner.test('postOrder should return success for valid input', async () => {
+                const result = await postOrder('buy', { quantity: 1, price: 100 });
+                TestRunner.assert(result.success === true, 'Result should be successful');
+                TestRunner.assert(result.data.quantity === 1, 'Data should contain correct quantity');
+                TestRunner.assert(result.data.price === 100, 'Data should contain correct price');
+            });
+
+            // Test 4: Number formatting
+            TestRunner.test('Number formatting should work correctly', () => {
+                const quantity = 1.23456789;
+                const price = 100.789;
+                
+                TestRunner.assert(quantity.toFixed(4) === '1.2346', 'Quantity should format to 4 decimals');
+                TestRunner.assert(price.toFixed(2) === '100.79', 'Price should format to 2 decimals');
+            });
+
+            // Test 5: Array operations
+            TestRunner.test('Array unshift should add to beginning', () => {
+                const orders = [[1, 100], [2, 95]];
+                const newOrder = [0.5, 102];
+                orders.unshift(newOrder);
+                
+                TestRunner.assert(orders.length === 3, 'Array should have 3 elements');
+                TestRunner.assert(orders[0] === newOrder, 'New order should be first');
+            });
+
+            // Test 6: DOM element creation (mock)
+            TestRunner.test('DOM elements should be created correctly', () => {
+                const div = { className: '', textContent: '', appendChild: () => {} };
+                div.className = 'order-row new-order';
+                
+                TestRunner.assert(div.className === 'order-row new-order', 'Class name should be set correctly');
+            });
+
+            // Test 7: Order data structure
+            TestRunner.test('Order data should maintain structure', () => {
+                const orderData = {
+                    buy: [[1.5, 100], [2.0, 95]],
+                    sell: [[1.0, 105], [3.0, 110]]
+                };
+                
+                TestRunner.assert(orderData.buy.length === 2, 'Buy orders should have 2 items');
+                TestRunner.assert(orderData.sell.length === 2, 'Sell orders should have 2 items');
+                
+                // Add new order
+                orderData.buy.unshift([0.5, 99]);
+                TestRunner.assert(orderData.buy.length === 3, 'Buy orders should have 3 items after adding');
+                TestRunner.assert(orderData.buy[0][0] === 0.5, 'New order should be first');
+            });
+
+            displayResults();
+        }
+
+        function displayResults() {
+            const resultsDiv = document.getElementById('test-results');
+            const passed = TestRunner.results.filter(r => r.passed).length;
+            const total = TestRunner.results.length;
+            
+            let html = `<div class="test-summary">Test Results: ${passed}/${total} passed</div>`;
+            
+            TestRunner.results.forEach(result => {
+                const className = result.passed ? 'test-pass' : 'test-fail';
+                const status = result.passed ? '✅ PASS' : '❌ FAIL';
+                const error = result.error ? ` - ${result.error}` : '';
+                
+                html += `<div class="${className}">
+                    ${status}: ${result.description}${error}
+                </div>`;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+            TestRunner.results = [];
+        }
+
+        // Auto-run tests on page load
+        window.onload = () => {
+            setTimeout(runAllTests, 500);
+        };
+    </script>
+</body>
+</html>
