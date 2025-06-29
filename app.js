@@ -50,14 +50,59 @@ function addNewOrder(orderType) {
     .then(result => {
       if (result.success) {
         console.log(`${orderType} order added successfully:`, result.data);
-        // Refresh the display to show the new order
-        processData(orderType);
+        // Add the new order with animation instead of refreshing entire display
+        addOrderWithAnimation(orderType, newOrder);
       } else {
         console.error('Failed to add order:', result.error);
         // Remove the order from local data if API call failed
         orderData[orderType].shift();
       }
     });
+}
+
+// Function to add a single order with animation
+function addOrderWithAnimation(orderType, orderData) {
+  const [quantity, price] = orderData;
+  
+  // Create the new order row
+  const row = document.createElement('div');
+  row.className = 'order-row new-order';
+  
+  const qtySpan = document.createElement('span');
+  qtySpan.className = 'price';
+  qtySpan.textContent = quantity.toFixed(4);
+  
+  const totalSpan = document.createElement('span');
+  totalSpan.className = 'total';
+  totalSpan.textContent = price.toFixed(2);
+  
+  row.appendChild(qtySpan);
+  row.appendChild(totalSpan);
+  
+  // Find the right position to insert (top of the appropriate section)
+  const existingRows = orderbookDiv.querySelectorAll('.order-row');
+  
+  if (orderType === 'buy') {
+    // Insert at the very beginning (top of buy orders)
+    if (existingRows.length > 0) {
+      orderbookDiv.insertBefore(row, existingRows[0]);
+    } else {
+      orderbookDiv.appendChild(row);
+    }
+  } else if (orderType === 'sell') {
+    // Insert after separator line
+    const separator = orderbookDiv.querySelector('.separator-line');
+    if (separator && separator.nextSibling) {
+      orderbookDiv.insertBefore(row, separator.nextSibling);
+    } else {
+      orderbookDiv.appendChild(row);
+    }
+  }
+  
+  // Remove the new-order class after animation completes
+  setTimeout(() => {
+    row.classList.remove('new-order');
+  }, 600); // Match the animation duration
 }
 
 fetch('data.json')

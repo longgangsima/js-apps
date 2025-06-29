@@ -52,21 +52,29 @@ body {
   margin-bottom: 5px;
 }
 
+.order-row.new-order {
+  animation: fadeInOrder 0.6s ease-out;
+}
+
 .price,
 .total {
-  background-color: #222;
   padding: 5px 10px;
   border-radius: 4px;
   min-width: 60px;
   text-align: center;
 }
 
-.price {
-  border-left: 3px solid green;
-}
-
-.total {
-  border-left: 3px solid blue;
+/* Animation for new orders */
+@keyframes fadeInOrder {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .separator-line {
