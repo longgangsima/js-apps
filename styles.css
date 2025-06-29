@@ -1,8 +1,73 @@
 body {
-  font-family: Arial;
+  background-color: #000;
+  color: #fff;
+  font-family: sans-serif;
   padding: 20px;
 }
+.container {
+  max-width: 400px;
+  margin: auto;
+  background-color: #111;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #333;
+}
+.tabs {
+  display: flex;
+  justify-content: space-between;
+}
+.tab {
+  flex: 1;
+  padding: 10px;
+  cursor: pointer;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+}
+#buy-btn {
+  background-color: green;
+}
+#sell-btn {
+  background-color: red;
+}
+.tab.active {
+  background-color: green;
+  border: 2px solid #fff;
+}
+.orderbook {
+  padding: 10px;
+  text-align: center;
+  /* gap: 10px; */
+}
 
-canvas {
-  border: 1px solid #ccc;
+.order-row {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 5px;
+}
+
+.price,
+.total {
+  background-color: #222;
+  padding: 5px 10px;
+  border-radius: 4px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.price {
+  border-left: 3px solid green;
+}
+
+.total {
+  border-left: 3px solid blue;
+}
+
+.separator-line {
+  width: 100%;
+  height: 2px;
+  background-color: #444;
+  margin: 15px 0;
+  border-radius: 1px;
 }
